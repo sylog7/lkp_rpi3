@@ -1,4 +1,4 @@
-# enable uart in raspberr pi 3 B
+# Enable uart in raspberr pi 3 B
 
 ## raspi-config
 ~~~
