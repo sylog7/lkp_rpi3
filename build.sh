@@ -24,7 +24,8 @@ get_kernel()
         echo "alrady here raspberry pi kernel ..."
     else
         echo "get kernel ..."
-        git clone --depth=1 --branch rpi-6.6.y https://github.com/raspberrypi/linux
+        # git clone --depth=1 --branch rpi-6.6.y https://github.com/raspberrypi/linux
+        git clone --depth=1 --branch rpi-6.1.y https://github.com/raspberrypi/linux
     fi
 
     cd linux
@@ -39,6 +40,22 @@ configure_kernel()
 #    make bcm2709_defconfig
     # make ARCH=arm CROSS_COMPILE=arm-linux-gnueabihf- bcm2709_defconfig
     make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} bcm2711_defconfig
+
+    # CONFIG_IKCONFIG for the “Kernel .config support” option
+    scripts/config --enable CONFIG_IKCONFIG
+    # CONFIG IKCONFIG_PROC for the “Enable access to .config through /proc/config.gz” option
+    scripts/config --enable CONFIG_IKCONFIG_PROC
+
+    # the string to append to the kernel version. Take uname –r as an example
+    # --set-str option string: Set option to "string"
+    scripts/config --set-str CONFIG_LOCALVERSION "-lkp-kernel"
+
+    # the frequency at which the timer (hardware) interrupt is triggered.
+    # Timer frequency. You’ll learn the details regarding this tunable in Chapter 10, The CPU Sched-uler – Part 1:
+	# --set-val option value: Set option to value
+    scripts/config --disable CONFIG_HZ_250
+    scripts/config --enable CONFIG_HZ_300
+    scripts/config --set-val CONFIG_HZ 300
 }
 
 build_kernel()
