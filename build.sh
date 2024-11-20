@@ -56,6 +56,36 @@ configure_kernel()
     scripts/config --disable CONFIG_HZ_250
     scripts/config --enable CONFIG_HZ_300
     scripts/config --set-val CONFIG_HZ 300
+
+    scripts/config --enable CONFIG_SPI
+    scripts/config --enable CONFIG_SPI_SPIDEV
+    scripts/config --enable CONFIG_DYNAMIC_DEBUG
+    scripts/config --enable CONFIG_SPI_DEBUG
+    # scripts/config --enable CONFIG_SPI_DW_MMIO
+    # scripts/config --enable CONFIG_SPI_GPIO
+
+    scripts/config --enable CONFIG_TEST_DYNAMIC_DEBUG
+    scripts/config --enable CONFIG_U_SERIAL_CONSOLE
+    scripts/config --enable CONFIG_USB_GADGET_DEBUG
+    scripts/config --enable CONFIG_USB_GADGET_VERBOSE
+    scripts/config --enable CONFIG_USB_CONFIGFS
+    scripts/config --enable CONFIG_USB_CONFIGFS_SERIAL
+    scripts/config --enable CONFIG_USB_CONFIGFS_ACM
+    scripts/config --enable CONFIG_USB_CONFIGFS_OBEX
+    scripts/config --enable CONFIG_USB_CONFIGFS_NCM
+    scripts/config --enable CONFIG_USB_CONFIGFS_ECM
+    scripts/config --enable CONFIG_USB_CONFIGFS_ECM_SUBSET
+    scripts/config --enable CONFIG_USB_CONFIGFS_RNDIS
+    scripts/config --enable CONFIG_USB_CONFIGFS_EEM
+    scripts/config --enable CONFIG_USB_CONFIGFS_MASS_STORAGE
+    scripts/config --enable CONFIG_USB_CONFIGFS_F_LB_SS
+    scripts/config --enable CONFIG_USB_CONFIGFS_F_FS
+    scripts/config --enable CONFIG_USB_CONFIGFS_F_UAC1
+    scripts/config --enable CONFIG_USB_CONFIGFS_F_UAC2
+    scripts/config --enable CONFIG_USB_CONFIGFS_F_MIDI
+    scripts/config --enable CONFIG_USB_CONFIGFS_F_HID
+    scripts/config --enable CONFIG_USB_CONFIGFS_F_UVC
+    scripts/config --enable CONFIG_USB_CONFIGFS_F_PRINTER
 }
 
 build_kernel()
@@ -76,8 +106,10 @@ mount_dirs()
     fi
 
     echo "mount dirs for boot, rootfs..."
-    sudo mount /dev/sda1 ${BOOT_DIR}
-    sudo mount /dev/sda2 ${ROOTFS_DIR}
+   # sudo mount /dev/sda1 ${BOOT_DIR}
+   # sudo mount /dev/sda2 ${ROOTFS_DIR}
+    sudo mount /dev/sdc1 ${BOOT_DIR}
+    sudo mount /dev/sdc2 ${ROOTFS_DIR}
 }
 
 install_modules()
@@ -89,7 +121,7 @@ install_modules()
     #sudo env PATH=$PATH make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} \
     #    INSTALL_MOD_PATH=$TOP_DIR/${ROOTFS_DIR} modules_install
     sudo env PATH=$PATH make ARCH=${ARCH} CROSS_COMPILE=${CROSS_COMPILE} \
-        INSTALL_MOD_PATH=mnt/root modules_install
+        INSTALL_MOD_PATH=${ROOTFS_DIR} modules_install
 }
 
 
@@ -110,19 +142,63 @@ install_kernel()
     cd $TOP_DIR
 }
 
-export TOP_DIR=`pwd`
-set_env
+# export TOP_DIR=`pwd`
+# set_env
 
-get_kernel
+# get_kernel
 
-configure_kernel
+# configure_kernel
 
-build_kernel
+# build_kernel
 
-mount_dirs
+# mount_dirs
 
-install_modules
+# install_modules
 
-install_kernel
+# install_kernel
 
+usage()
+{
+    echo "${FUNCNAME}"
+    echo "======================================"
+    echo "select operation: "
+    echo "e: set environment variables."
+    echo "a: build kernel and install modules"
+    # read -p "Enter Product Index: " OPT
+}
+
+prompt_build_kernel()
+{
+    # OPT="e"
+    usage
+    read -p "Enter build option: " OPT
+
+    case $OPT in
+        "e")
+            echo "======= set env ======="
+            export TOP_DIR=`pwd`
+            set_env
+            ;;
+        "a")
+            echo "======= build kernel & install modules ======="
+            export TOP_DIR=`pwd`
+            set_env
+            get_kernel
+            configure_kernel
+            build_kernel
+            mount_dirs
+            install_modules
+            install_kernel
+            ;;
+        *)
+            echo "Invalid build option(${OPT})"
+            ;;
+    esac
+}
+
+prompt_build_kernel
+
+if [ -z "${OPT}" ]; then
+    usage
+fi
 
