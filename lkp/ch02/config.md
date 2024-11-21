@@ -1,16 +1,17 @@
 
 # configure kernel and build kernel.
 Kernel에서 제공하는 많은 기능들이 있는데, 이것들은 KBuild 시스템을 통해서 빌드된다.  
-KBuild 시스템 사용법에 맞게 CONFIG를 직접 추가할수도 있고,  
-기존의 CONFIG들 중 필요한 것만 남겨놓고 필요없는 것을 제거할 수도 있다.  
-반대로 커널에서 제공하는 기능을 빌드하고 싶을 경우, enable할수도 있다.  
-CONFIG_HZ처럼 CONFIG값을 수정할 수도 있다.  
-
+예제에서 처럼 CONFIG_IKCONFIG, CONFIG_IKCONFIG_PROC 같은 기존의 CONFIG들을 활성화 시켜서  
+빌드가 되도록 해서 기능을 추가해줄 수 있다.  
+반대로 CONFIG_HZ처럼 CONFIG값을 수정할 수도 있다.  
+커널에서 제공하는 기능을 빌드하고 싶을 경우, enable할수도 있다.  
+  
 책에서는 데스크톱 기반의 커널 빌드를 주로 실습하지만,  
 여기서는 최대한 raspberry pi환경에서 실습해볼 것이다.  
 raspberry pi 3, 4 버전 모두 동일하게 사용이 가능하다.  
 
 ## kernel configuration
+책에서 설정한 CONFIG들에 대한 설명이다.
  - CONFIG_IKCONFIG: “Kernel .config support” option
  - CONFIG_IKCONFIG_PROC:“Enable access to .config through /proc/config.gz” option
  - CONFIG_LOCALVERSION: The string to append to the kernel version. Take uname –r as an example
@@ -39,10 +40,9 @@ scripts/config --set-val CONFIG_HZ 300
 여기서는 raspberry pi용 kernel을 빌드, 설치를 할 것이므로,  
 raspberry pi 공식 문서의 내용을 참고해서 build, install script를 별도로 구현했다.  
 공식 문서 url은 아래와 같다.  
-[raspi kernel official document](https://www.raspberrypi.com/documentation/computers/linux_kernel.html)
+[raspi kernel official document](https://www.raspberrypi.com/documentation/computers/linux_kernel.html)  
 구현된 build script경로는 아래와 같다.  
-[build script](../../build.sh)
-
+[build script](../../build.sh)  
 구현된 내용만 따로 발췌해왔다.  
 
 ~~~bash
