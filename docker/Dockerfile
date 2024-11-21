@@ -107,8 +107,8 @@ RUN echo "set tabstop=4" >> ~/.vimrc
 RUN echo "set shiftwidth=4" >> ~/.vimrc
 RUN echo "set expandtab" >> ~/.vimrc
 
-RUN git config --global user.name soonyoung
-RUN git config --global user.email soonyoung87@gmail.com
+RUN git config --global user.name soons13
+RUN git config --global user.email soonyoung.think@gmail.com
 
 
-CMD ["/bin/bash"]
+#CMD["/bin/bash"]
