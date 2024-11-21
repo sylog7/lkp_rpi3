@@ -3,9 +3,10 @@
 Kernel에서 제공하는 많은 기능들이 있는데, 이것들은 KBuild 시스템을 통해서 빌드된다.  
 예제에서 처럼 CONFIG_IKCONFIG, CONFIG_IKCONFIG_PROC 같은 기존의 CONFIG들을 활성화 시켜서  
 빌드가 되도록 해서 기능을 추가해줄 수 있다.  
-반대로 CONFIG_HZ처럼 CONFIG값을 수정할 수도 있다.  
-커널에서 제공하는 기능을 빌드하고 싶을 경우, enable할수도 있다.  
-  
+또, 예제에서 처럼 CONFIG_HZ처럼 CONFIG값을 수정할 수도 있다.  
+디바이스 드라이버를 구현할 때처럼 직접 CONFIG를 KConfig에 추가해주고,  
+Makefile에서 CONFIG값에 따라 빌드 여부를 결정되게 할 수도 있다.  
+
 책에서는 데스크톱 기반의 커널 빌드를 주로 실습하지만,  
 여기서는 최대한 raspberry pi환경에서 실습해볼 것이다.  
 raspberry pi 3, 4 버전 모두 동일하게 사용이 가능하다.  
