@@ -164,24 +164,27 @@ usage()
     echo "select operation: "
     echo "e: set environment variables."
     echo "a: build kernel and install modules"
-    # read -p "Enter Product Index: " OPT
+    echo "c: build device driver in chapters"
+}
+
+build_chapter()
+{
+    echo "arg num: $#, arg0: $0, arg1: $1, arg2: $2"
 }
 
 prompt_build_kernel()
 {
-    # OPT="e"
     usage
     read -p "Enter build option: " OPT
 
+    export TOP_DIR='pwd'
     case $OPT in
         "e")
             echo "======= set env ======="
-            export TOP_DIR=`pwd`
             set_env
             ;;
         "a")
             echo "======= build kernel & install modules ======="
-            export TOP_DIR=`pwd`
             set_env
             get_kernel
             configure_kernel
@@ -190,15 +193,27 @@ prompt_build_kernel()
             install_modules
             install_kernel
             ;;
+        "c")
+            echo "======== build device drivers in chapter ========"
+            read -p "select chapter (1 ~ 12): " CHAPTER
+            build_chapter "$CHAPTER"
+
+            ;;
         *)
             echo "Invalid build option(${OPT})"
             ;;
     esac
 }
 
-prompt_build_kernel
 
-if [ -z "${OPT}" ]; then
-    usage
+
+if [ $# -gt 0 ]; then
+    echo "manual argument"
+else
+    prompt_build_kernel
+    if [ -z "${OPT}" ]; then
+        usage
+    fi
 fi
+
 
