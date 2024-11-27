@@ -167,9 +167,34 @@ usage()
     echo "c: build device driver in chapters"
 }
 
+display_chapter()
+{
+    echo -e "\n================= chapters ================"
+    echo "2: chapter 2. build kernel"
+    echo "4: chapter 4. first kernel module & loglevel"
+}
+
 build_chapter()
 {
-    echo "arg num: $#, arg0: $0, arg1: $1, arg2: $2"
+    CHAPTER=$1
+    BUILD_DIR=$TOP_DIR/lkp/ch04
+    case $CHAPTER in
+        "2")
+            echo "Build chapter 2. build kernel"
+            echo "please see $TOP_DIR/build.sh"
+            ;;
+        "4")
+            echo "Build chapter 4"
+            make -C $BUILD_DIR clean
+            make -C $BUILD_DIR
+            cp -v $BUILD_DIR/*.ko .
+            ;;
+        *)
+            echo "invalid chapter value"
+            ;;
+    esac
+
+
 }
 
 prompt_build_kernel()
@@ -195,6 +220,8 @@ prompt_build_kernel()
             ;;
         "c")
             echo "======== build device drivers in chapter ========"
+            set_env
+            display_chapter
             read -p "select chapter (1 ~ 12): " CHAPTER
             build_chapter "$CHAPTER"
 
