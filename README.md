@@ -1,6 +1,10 @@
 # lkp_rpi3
 Linux Kernel Programming with Raspberry Pi 3, 4  
-  
+ 
+## docker
+docker environment.
+Please refer to this([build docker image and run docker container](./docker/README.md))
+
 ## lkp
 customized version of Linux Kernel Programming example codes.  
 (The original code is here: https://github.com/PacktPublishing/Linux-Kernel-Programming_2E)  
