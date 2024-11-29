@@ -96,7 +96,7 @@ build_kernel()
 
 mount_dirs()
 {
-    echo "======= mount_dirs() ========"
+    echo "======= ${FUNCNAME}() ========"
     if [ -d $TOP_DIR/mnt ]; then
         echo "mount dir already here"
     else
@@ -110,6 +110,16 @@ mount_dirs()
    # sudo mount /dev/sda2 ${ROOTFS_DIR}
     sudo mount /dev/sdc1 ${BOOT_DIR}
     sudo mount /dev/sdc2 ${ROOTFS_DIR}
+}
+
+umount_dirs()
+{
+    echo "======= ${FUNCNAME}() ========"
+    if [ -d $TOP_DIR/mnt ]; then
+        echo "umount dirs for boot, rootfs..."
+        sudo umount /dev/sdc1
+        sudo umount /dev/sdc2
+    fi
 }
 
 install_modules()
@@ -185,9 +195,19 @@ build_chapter()
             ;;
         "4")
             echo "Build chapter 4"
-            make -C $BUILD_DIR clean
-            make -C $BUILD_DIR
-            cp -v $BUILD_DIR/*.ko .
+            echo "build printk_loglvl module..."
+            make -C $BUILD_DIR/printk_loglvl clean
+            make -C $BUILD_DIR/printk_loglvl
+
+            echo "build helloworld_lkm module..."
+            make -C $BUILD_DIR/helloworld_lkm clean
+            make -C $BUILD_DIR/helloworld_lkm
+
+            echo "install module into rpi root file system..."
+            mount_dirs
+            sudo cp -v $BUILD_DIR/printk_loglvl/*.ko $TOP_DIR/mnt/root/home/pi/ldd
+            sudo cp -v $BUILD_DIR/helloworld_lkm/*.ko $TOP_DIR/mnt/root/home/pi/ldd
+            umount_dirs
             ;;
         *)
             echo "invalid chapter value"
