@@ -67,6 +67,8 @@ RUN apt-get install -y libncurses5-dev
 RUN apt-get install -y crossbuild-essential-armhf
 RUN apt-get install -y crossbuild-essential-arm64
 
+RUN apt install -y man
+RUN apt install -y git-core bash-completion
 
 # rootfs dependency
 # RUN apt-get install -y pylint3
@@ -87,6 +89,7 @@ RUN apt-get install -y pkg-config m4 libtool
 RUN apt-get install -y libncurses-dev
 
 RUN apt install -y openssl curl gnutls-bin
+
 
 # USER root
 # RUN useradd arria10
