@@ -19,10 +19,14 @@
  * For details, please refer the book, Ch 4.
  */
 
+/* At the top of the file, before any includes */
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/printk.h>
 #include <linux/init.h>
 #include <linux/module.h>
 
-MODULE_AUTHOR("SoonYoung Jung");
+MODULE_AUTHOR("Kaiwan N Billimoria");
 MODULE_DESCRIPTION("LKP2E book:ch4/printk_loglvl: printk at each kernel log level");
 MODULE_LICENSE("Dual MIT/GPL");
 MODULE_VERSION("0.2");

@@ -61,3 +61,34 @@ pi@raspberrypi:~/ldd$ sudo rmmod printk_loglvl
 [  498.990750] Goodbye, world! Climate change has done us in...
 [  506.327719] Goodby, world @ log-level KERN_INFO    [6]
 ~~~
+
+이번에는 pr_fmt로 formatted specifier string을 출력해보자.
+printk_lvl.c의 맨 위에 아래처럼 pr_fmt define을 추가한다.
+~~~C
+/* At the top of the file, before any includes */
+#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
+
+#include <linux/printk.h>
+#include <linux/init.h>
+#include <linux/module.h>
+~~~
+  
+빌드를 다시 하고, 모듈을 insmod해보면 로그에 모듈 이름이  
+앞에 추가되어 출력되는 것을 확인할 수 있다.  
+~~~sh
+pi@raspberrypi:~/ldd$ sudo insmod printk_loglvl.ko 
+[   84.629443] printk_loglvl: Hello, world @ log-level KERN_EMERG   [0]
+[   84.635949] printk_loglvl: Hello, world @ log-level KERN_ALERT   [1]
+[   84.642420] printk_loglvl: Hello, world @ log-level KERN_CRIT    [2]
+
+pi@raspberrypi:~/ldd$ sudo dmesg | tail -n 30
+...
+[   84.629443] printk_loglvl: Hello, world @ log-level KERN_EMERG   [0]
+[   84.635949] printk_loglvl: Hello, world @ log-level KERN_ALERT   [1]
+[   84.642420] printk_loglvl: Hello, world @ log-level KERN_CRIT    [2]
+[   84.648880] printk_loglvl: Hello, world @ log-level KERN_ERR     [3]
+[   84.648886] printk_loglvl: Hello, world @ log-level KERN_WARNING [4]
+[   84.648891] printk_loglvl: Hello, world @ log-level KERN_NOTICE  [5]
+[   84.648896] printk_loglvl: Hello, world @ log-level KERN_INFO    [6]
+~~~
+
