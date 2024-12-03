@@ -180,14 +180,23 @@ usage()
 display_chapter()
 {
     echo -e "\n================= chapters ================"
-    echo "2: chapter 2. build kernel"
-    echo "4: chapter 4. first kernel module & loglevel"
+    echo -e "2:  - build kernel"
+    echo -e "4:  - first kernel module\n\
+            \r    - loglevel"
+    echo -e "5:  - lkm_template(Makefile template)\n\
+            \r    - cross (cross compile to use rpi)\n\
+            \r    - fp_in_lkm (floating point usage)\n\
+            \r    - modparams (pass argument to module)\n\
+            \r    - modstacking (module stacking to use multiple file)\n\
+            \r    - min_sysinfo (sys info print)\n"
 }
 
 build_chapter()
 {
     CHAPTER=$1
-    BUILD_DIR=$TOP_DIR/lkp/ch04
+    CHAPTER_STR=$(seq -f "%02g" ${CHAPTER} ${CHAPTER})
+    BUILD_DIR=$TOP_DIR/lkp/ch$CHAPTER_STR
+
     case $CHAPTER in
         "2")
             echo "Build chapter 2. build kernel"
@@ -209,6 +218,12 @@ build_chapter()
             sudo cp -v $BUILD_DIR/helloworld_lkm/*.ko $TOP_DIR/mnt/root/home/pi/ldd
             umount_dirs
             ;;
+        "5")
+            echo "Build chapter 5"
+            echo "build lkm_template"
+            make -C $BUILD_DIR/lkm_template clean
+            make -C $BUILD_DIR/lkm_template
+            ;;
         *)
             echo "invalid chapter value"
             ;;
@@ -223,13 +238,14 @@ prompt_build_kernel()
     read -p "Enter build option: " OPT
 
     export TOP_DIR='pwd'
+    echo -e "=================================================="
     case $OPT in
         "e")
-            echo "======= set env ======="
+            # echo -e "\r\t set env"
             set_env
             ;;
         "a")
-            echo "======= build kernel & install modules ======="
+            # echo -e "\r\t build kernel & install modules"
             set_env
             get_kernel
             configure_kernel
@@ -239,7 +255,7 @@ prompt_build_kernel()
             install_kernel
             ;;
         "c")
-            echo "======== build device drivers in chapter ========"
+            # echo -e "\r\t build device drivers in chapter"
             set_env
             display_chapter
             read -p "select chapter (1 ~ 12): " CHAPTER
