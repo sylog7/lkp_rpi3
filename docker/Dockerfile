@@ -90,6 +90,7 @@ RUN apt-get install -y libncurses-dev
 
 RUN apt install -y openssl curl gnutls-bin
 
+RUN apt install -y indent
 
 # USER root
 # RUN useradd arria10
