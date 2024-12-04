@@ -223,6 +223,9 @@ build_chapter()
             echo "build lkm_template"
             make -C $BUILD_DIR/lkm_template clean
             make -C $BUILD_DIR/lkm_template
+
+            make -C $BUILD_DIR/cross clean
+            make -C $BUILD_DIR/cross
             ;;
         *)
             echo "invalid chapter value"
