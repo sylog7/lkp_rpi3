@@ -226,6 +226,15 @@ build_chapter()
 
             make -C $BUILD_DIR/cross clean
             make -C $BUILD_DIR/cross
+
+            make -C $BUILD_DIR/fp_in_lkm clean
+            make -C $BUILD_DIR/fp_in_lkm
+
+            mount_dirs
+            sudo cp -v $BUILD_DIR/lkm_template/*.ko $TOP_DIR/mnt/root/home/pi/ldd
+            sudo cp -v $BUILD_DIR/cross/*.ko        $TOP_DIR/mnt/root/home/pi/ldd
+            sudo cp -v $BUILD_DIR/fp_in_lkm/*.ko    $TOP_DIR/mnt/root/home/pi/ldd
+            umount_dirs
             ;;
         *)
             echo "invalid chapter value"

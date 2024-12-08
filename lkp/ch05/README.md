@@ -43,3 +43,35 @@ help       : this help target
 $ 
 ~~~
 
+
+## cross
+책을 보면, cross compile용 설정에 관해 나와있다.  
+저작권 때문에 자세한 내용은 쓸 수 없다.(책을 직접 보는 것이 더 좋다.)  
+그냥 당연하게 써왔던 것들이지만 설명이 잘 되어 있다.  
+~~~bash
+pi@raspberrypi:~/ldd$ sudo insmod lkm_template.ko 
+pi@raspberrypi:~/ldd$ sudo dmesg | tail
+...
+[   36.166458] lkm_template: loading out-of-tree module taints kernel.
+[   36.166966] lkm_template:lkm_template_init(): inserted
+pi@raspberrypi:~/ldd$ 
+pi@raspberrypi:~/ldd$ sudo rmmod lkm_template 
+pi@raspberrypi:~/ldd$ sudo dmesg |tail
+...
+[   36.166458] lkm_template: loading out-of-tree module taints kernel.
+[   36.166966] lkm_template:lkm_template_init(): inserted
+[   52.160196] lkm_template:lkm_template_exit(): removed
+pi@raspberrypi:~/ldd$
+~~~
+TODO: out-of-tree module taints kernel로그가 출력된다.  
+Makefile에서 build할 때, INSTALL_MOD_PATH를 넘기도록 수정해보자.  
+
+
+## fp(floating point) in lkm
+커널에서는 floating point(부동소수점) 연산이 지원되지 않는다.  
+예전에 카메라 디바이스 드라이버를 개발하면서 비슷한 시도를 했던 경험이 있다.  
+결국엔 부동소수점 연산하는 부분을 user space application으로 옮겼었다.
+부동소수점 연산을 위해서는 별도의 함수를 사용하면 가능하긴 하다.  
+kernel_fpu_begin() 이후에 부동소수점 연산을 하고  
+연산이 끝난 후에는 kernel_fpu_end()로 닫아주면 된다.  
+  
