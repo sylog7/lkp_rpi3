@@ -2,6 +2,8 @@
 
 set_env()
 {
+    echo "-----------------------------------------"
+    echo "$FUNCNAME(), set environment variables "
     # global variable
     export TOP_DIR=`pwd`
 
@@ -16,6 +18,14 @@ set_env()
     export KERNEL_DIR=$TOP_DIR/linux
     export BOOT_DIR=$TOP_DIR/mnt/boot
     export ROOTFS_DIR=$TOP_DIR/mnt/root
+    echo "TOP_DIR       : $TOP_DIR"
+    echo "ARCH          : $ARCH"
+    echo "CROSS_COMPILE : $CROSS_COMPILE"
+    echo "KERNEL        : $KERNEL"
+    echo "KERNEL_DIR    : $KERNEL_DIR"
+    echo "BOOT_DIR      : $BOOT_DIR"
+    echo "ROOTFS_DIF    : $ROOTFS_DIR"
+    echo "-------------------------------------------"
 }
 
 get_kernel()
@@ -172,9 +182,10 @@ usage()
     echo "${FUNCNAME}"
     echo "======================================"
     echo "select operation: "
-    echo "e: set environment variables."
-    echo "a: build kernel and install modules"
-    echo "c: build device driver in chapters"
+    echo "--env     : set environment variables."
+    echo "--all     : build kernel and install modules"
+    echo "--chr     : build device driver in chapters"
+    echo "--clnchrs : clean all cahpters"
 }
 
 display_chapter()
@@ -244,19 +255,27 @@ build_chapter()
 
 }
 
+clean_chapters()
+{
+    echo "--- $FUNCNAME ---"
+    echo "TOP_DIR: $TOP_DIR"
+    make -C $TOP_DIR/lkp/ch04/printk_loglvl clean
+    make -C $TOP_DIR/lkp/ch04/helloworld_lkm clean
+
+    make -C $TOP_DIR/lkp/ch05/lkm_template clean
+    make -C $TOP_DIR/lkp/ch05/cross clean
+    make -C $TOP_DIR/lkp/ch05/fp_in_lkm clean
+}
+
 prompt_build_kernel()
 {
-    usage
-    read -p "Enter build option: " OPT
-
-    export TOP_DIR='pwd'
-    echo -e "=================================================="
-    case $OPT in
-        "e")
+    PARAMS=$1
+    case $PARAMS in
+        "--env")
             # echo -e "\r\t set env"
             set_env
             ;;
-        "a")
+        "--all")
             # echo -e "\r\t build kernel & install modules"
             set_env
             get_kernel
@@ -266,29 +285,33 @@ prompt_build_kernel()
             install_modules
             install_kernel
             ;;
-        "c")
+        "--chr")
             # echo -e "\r\t build device drivers in chapter"
             set_env
             display_chapter
             read -p "select chapter (1 ~ 12): " CHAPTER
             build_chapter "$CHAPTER"
-
+            ;;
+        "--clnchrs")
+            set_env
+            clean_chapters
             ;;
         *)
             echo "Invalid build option(${OPT})"
+            exit 1
             ;;
     esac
 }
 
 
+export TOP_DIR='pwd'
 
 if [ $# -gt 0 ]; then
-    echo "manual argument"
+    prompt_build_kernel $@
 else
-    prompt_build_kernel
-    if [ -z "${OPT}" ]; then
-        usage
-    fi
+    echo "Please type options."
+    usage
+    exit 1
 fi
 
 
