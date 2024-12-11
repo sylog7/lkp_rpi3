@@ -34,8 +34,8 @@ get_kernel()
         echo "alrady here raspberry pi kernel ..."
     else
         echo "get kernel ..."
-        # git clone --depth=1 --branch rpi-6.6.y https://github.com/raspberrypi/linux
-        git clone --depth=1 --branch rpi-6.1.y https://github.com/raspberrypi/linux
+        git clone --depth=1 --branch rpi-6.6.y https://github.com/raspberrypi/linux
+        # git clone --depth=1 --branch rpi-6.1.y https://github.com/raspberrypi/linux
     fi
 
     cd linux
@@ -59,6 +59,10 @@ configure_kernel()
     # the string to append to the kernel version. Take uname –r as an example
     # --set-str option string: Set option to "string"
     scripts/config --set-str CONFIG_LOCALVERSION "-lkp-kernel"
+
+    # 6.6.y
+    scripts/config --enable CONFIG_FW_LOADER_DEBUG
+    scripts/config --enable CONFIG_ARCH_HAS_KERNEL_FPU_SUPPORT
 
     # the frequency at which the timer (hardware) interrupt is triggered.
     # Timer frequency. You’ll learn the details regarding this tunable in Chapter 10, The CPU Sched-uler – Part 1:
@@ -186,6 +190,7 @@ usage()
     echo "--all     : build kernel and install modules"
     echo "--chr     : build device driver in chapters"
     echo "--clnchrs : clean all cahpters"
+    echo "--help    : show help prompt"
 }
 
 display_chapter()
@@ -238,13 +243,15 @@ build_chapter()
             make -C $BUILD_DIR/cross clean
             make -C $BUILD_DIR/cross
 
-            make -C $BUILD_DIR/fp_in_lkm clean
-            make -C $BUILD_DIR/fp_in_lkm
+            # only x86 available
+            # make -C $BUILD_DIR/fp_in_lkm clean
+            # make -C $BUILD_DIR/fp_in_lkm
 
             mount_dirs
             sudo cp -v $BUILD_DIR/lkm_template/*.ko $TOP_DIR/mnt/root/home/pi/ldd
             sudo cp -v $BUILD_DIR/cross/*.ko        $TOP_DIR/mnt/root/home/pi/ldd
-            sudo cp -v $BUILD_DIR/fp_in_lkm/*.ko    $TOP_DIR/mnt/root/home/pi/ldd
+            # fpu_begin() is not supported in 6.6
+            # sudo cp -v $BUILD_DIR/fp_in_lkm/*.ko    $TOP_DIR/mnt/root/home/pi/ldd
             umount_dirs
             ;;
         *)
@@ -264,7 +271,8 @@ clean_chapters()
 
     make -C $TOP_DIR/lkp/ch05/lkm_template clean
     make -C $TOP_DIR/lkp/ch05/cross clean
-    make -C $TOP_DIR/lkp/ch05/fp_in_lkm clean
+    # only x86 available
+    # make -C $TOP_DIR/lkp/ch05/fp_in_lkm clean
 }
 
 prompt_build_kernel()
@@ -296,6 +304,9 @@ prompt_build_kernel()
             set_env
             clean_chapters
             ;;
+        "--help")
+            usage
+            ;;
         *)
             echo "Invalid build option(${OPT})"
             exit 1
@@ -311,7 +322,6 @@ if [ $# -gt 0 ]; then
 else
     echo "Please type options."
     usage
-    exit 1
 fi
 
 
