@@ -74,4 +74,7 @@ Makefile에서 build할 때, INSTALL_MOD_PATH를 넘기도록 수정해보자.
 부동소수점 연산을 위해서는 별도의 함수를 사용하면 가능하긴 하다.  
 kernel_fpu_begin() 이후에 부동소수점 연산을 하고  
 연산이 끝난 후에는 kernel_fpu_end()로 닫아주면 된다.  
+이 방법은 x86에서만 사용이 가능하다.
+https://stackoverflow.com/questions/68404843/handle-float-value-in-device-driver
+floating point연산은 비용이 많이 들고 위험이 있기 때문에 커널에서는 지원되지 않는다고 한다.  
   

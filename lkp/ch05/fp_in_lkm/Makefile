@@ -73,6 +73,13 @@ else
 endif
 #---
 
+# FPU_CFLAGS := -msse -msse2
+# FPU_CFLAGS += -mhard-float
+# FPU_CFLAGS := -mfpu=vfp
+# FPU_CFLAGS += -mfloat-abi=hard
+# FPU_CLFAGS := -mcpu=arm1176jzf-s -mfpu=vfp -mfloat-abi=hard
+CC_FLAGS_FPU := -mhard-float
+
 # Compiler
 CC     := $(CROSS_COMPILE)gcc
 #CC    := clang
@@ -80,6 +87,9 @@ STRIP := ${CROSS_COMPILE}strip
 
 PWD            := $(shell pwd)
 obj-m          += ${FNAME_C}.o
+#CFLAGS_${FNAME_C} += $(FPU_CFLAGS)
+# ccflags-y	+= ${FPU_CFLAGS}
+CFLAGS_fp_in_lkm.o += $(CC_FLAGS_FPU)
 
 #--- Debug or production mode?
 # Set the MYDEBUG variable accordingly to y/n resp. We keep it off (n) by default.
