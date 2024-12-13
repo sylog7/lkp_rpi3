@@ -247,6 +247,9 @@ build_chapter()
             # make -C $BUILD_DIR/fp_in_lkm clean
             # make -C $BUILD_DIR/fp_in_lkm
 
+            make -C $BUILD_DIR/min_sysinfo clean
+            make -C $BUILD_DIR/min_sysinfo
+
             mount_dirs
             sudo cp -v $BUILD_DIR/lkm_template/*.ko $TOP_DIR/mnt/root/home/pi/ldd
             sudo cp -v $BUILD_DIR/cross/*.ko        $TOP_DIR/mnt/root/home/pi/ldd
@@ -271,6 +274,7 @@ clean_chapters()
 
     make -C $TOP_DIR/lkp/ch05/lkm_template clean
     make -C $TOP_DIR/lkp/ch05/cross clean
+    make -C $TOP_DIR/lkp/ch05/min_sysinfo clean
     # only x86 available
     # make -C $TOP_DIR/lkp/ch05/fp_in_lkm clean
 }
