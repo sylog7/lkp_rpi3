@@ -78,9 +78,9 @@ countem.sh 스크립트의 샘플 실행에서 얻은 학습과 결과를 요약
  - 모든 커널 스레드의 갯수는 3번에 나온 것처럼 134개 이다.  
  - 모든 user mode 스레드의 갯수는 모든 스레드 갯수 - 커널 스레드 갯수, 즉, 2번 - 3번으로 157개이다.
  - 그러므로, user mode stack은 157개이다.
- - kernel mode stack은 
+ - kernel mode stack은 아래 처럼 계산할 수 있다.  
  user mode thread 마다 kernel mode stack을 하나씩 갖고 있으므로: 4번 *2 == user mode thread number * 2  
- kernel thread는 kernel mode stack만 갖고 있으므로 3번 == kernel mode thread number
+ kernel thread는 kernel mode stack만 갖고 있으므로 3번 == kernel mode thread number  
  결국 3번 + (4번)*2  == kernel mode threads + (user mode threads) * 2 가 총 스택의 갯수가 된다.  
 ~~~bash
 pi@raspberrypi:~/LKP_2E/ch6$ ./countem2.sh
