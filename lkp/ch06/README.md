@@ -178,3 +178,10 @@ static inline void show_ctx(void)
 		pr_alert("Whoa! running in interrupt context [Should NOT Happen here!]\n");
 }
 ~~~
+이 커널 모듈(ch6/current_affairs)의 핵심 요점은 Linux OS의 모놀리식 특성을 보여준다.  
+insmod 작업을 수행했을 때 커널에 삽입되고 init 코드 경로가 실행되었다.  
+누가 실행했을까? 출력을 보면, insmod 프로세스 자체가 프로세스 컨텍스트에서 모듈의 init 코드를 실행해서 Linux 커널의 모놀리식 특성을 증명했다!(rmmod 프로세스와 정리 코드 경로도 마찬가지이다. rmmod 프로세스가 프로세스 컨텍스트에서 실행했다.)  
+  
+마이크로커널 아키텍처는 아마도 모놀리식과는 정반대 접근 방식일 것입니다. 이 접근 방식은 메시지 전달 방식(시스템 호출 없음)으로, 메시지가 사용자 앱/프로세스에서 서버 프로세스로 전달*되고, 서버 프로세스가 작업을 수행합니다.  
+
+
