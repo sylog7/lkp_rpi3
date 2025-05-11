@@ -51,13 +51,13 @@ printf "Thus, total # of user mode threads alive = %9d\n" $((${total_thrds}-${to
 
 ### Summarizing the kernel with respect to threads, task structures, and stacks
 countem.sh 스크립트의 샘플 실행에서 얻은 학습과 결과를 요약해보자.  
-• 작업 구조(Task structures):
-	• 모든 활성 스레드(사용자 또는 커널)는 커널에 해당 작업 구조(struct task_struct)를 가지고 있다. 이것이 커널이 스레드를 추적하고 관리하는 방식이다.
-	• ch6/countem.sh 스크립트:
-		• 시스템에 활성 스레드(사용자 및 커널 모두)가 총 293개이므로 커널 메모리에 총 293개의 task_struct(메타데이터)가 있음을 의미한다.(코드에서는 struct task_struct). 다음과 같이 말할 수 있다.
-		• 이러한 task struct 중 159개는 사용자 스레드를 나타낸다.
-		• 나머지(293 - 159 =) 134개의 task struct는 커널 스레드의 task struct를 나타낸다.  
-• 스택:
+#### 작업 구조(Task structures):
+    • 모든 활성 스레드(사용자 또는 커널)는 커널에 해당 작업 구조(struct task_struct)를 가지고 있다. 이것이 커널이 스레드를 추적하고 관리하는 방식이다.
+    • ch6/countem.sh 스크립트:
+        • 시스템에 활성 스레드(사용자 및 커널 모두)가 총 293개이므로 커널 메모리에 총 293개의 task_struct(메타데이터)가 있음을 의미한다.(코드에서는 struct task_struct). 다음과 같이 말할 수 있다.
+        • 이러한 task struct 중 159개는 사용자 스레드를 나타낸다.
+        • 나머지(293 - 159 =) 134개의 task struct는 커널 스레드의 task struct를 나타낸다.  
+#### 스택:
 	• 모든 사용자 공간 스레드에는 두 개의 스택이 있다.
 		• 사용자 모드 스택(스레드가 사용자 모드 코드 경로를 실행할 때 실행됨)
 		• 커널 모드 스택(스레드가 커널 모드 코드 경로를 실행할 때 실행됨)
