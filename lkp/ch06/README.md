@@ -71,4 +71,26 @@ countem.sh 스크립트의 샘플 실행에서 얻은 학습과 결과를 요약
         (64비트 Linux에서 커널 모드 스택당 4페이지, 페이지 크기를 4KB로 가정하면 스택 메모리에 사용되는 RAM은 4\*4096\*452 = 7.06MB이다.)  
 		• FYI, grep "KernelStack" /proc/meminfo 명령은 현재 커널 스택에 사용되는 메모리 양을 보여준다. (자세한 내용은 proc(5)의 man 페이지를 참조)
 
+## countmem2.sh script
+책에느 안나와있지만, countmem2.sh스크립트를 뜯어보자.  
+이전에 실행한 결과의 스레드 수와 다를 수 있다.(백그라운드로 동작하는 스레드 들이 있으므로)  
+ - 모든 스레드 갯수는 2번(ps -LA)에 나온 것처럼 291개이다.  
+ - 모든 커널 스레드의 갯수는 3번에 나온 것처럼 134개 이다.  
+ - 모든 user mode 스레드의 갯수는 모든 스레드 갯수 - 커널 스레드 갯수, 즉, 2번 - 3번으로 157개이다.
+ - 그러므로, user mode stack은 157개이다.
+ - kernel mode stack은 
+ user mode thread 마다 kernel mode stack을 하나씩 갖고 있으므로: 4번 *2 == user mode thread number * 2  
+ kernel thread는 kernel mode stack만 갖고 있으므로 3번 == kernel mode thread number
+ 결국 3번 + (4번)*2  == kernel mode threads + (user mode threads) * 2 가 총 스택의 갯수가 된다.  
+~~~bash
+pi@raspberrypi:~/LKP_2E/ch6$ ./countem2.sh
+1. Total # of processes alive                        =       199
+2. Total # of threads alive                          =       291
+3. Total # of kernel threads alive                   =       134
+ (each kthread will have a kernel-mode stack)
+4. Thus, total # of user mode threads = (2) - (3)    =       157
+ (each uthread will have both a user and kernel-mode stack)
+5. Thus, total # of kernel-mode stacks = (3) + (4)*2 =       448
+pi@raspberrypi:~/LKP_2E/ch6$
+~~~
 
