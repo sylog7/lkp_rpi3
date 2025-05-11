@@ -94,3 +94,87 @@ pi@raspberrypi:~/LKP_2E/ch6$ ./countem2.sh
 pi@raspberrypi:~/LKP_2E/ch6$
 ~~~
 
+## current MACRO(current_affairs.c), kernel, user context
+~~~bash
+pi@raspberrypi:~$ sudo dmesg -C
+pi@raspberrypi:~$ sudo insmod ./current_affairs.ko; lsmod |grep current_affairs
+current_affairs        12288  0
+pi@raspberrypi:~$ sleep 1
+pi@raspberrypi:~$ sudo rmmod current_affairs
+pi@raspberrypi:~$ sudo dmesg
+[   57.377318] current_affairs: loading out-of-tree module taints kernel.
+[   57.378005] current_affairs:current_affairs_init(): inserted
+[   57.378022] current_affairs:current_affairs_init(): sizeof(struct task_struct)=7872
+[   57.378035] current_affairs:show_ctx():
+[   57.378041] current_affairs:show_ctx(): we're running in process context ::
+                name        : insmod
+                PID         :   1609
+                TGID        :   1609
+                UID         :      0
+                EUID        :      0 (have root)
+                state       : R
+                current (ptr to our process context's task_struct) :
+                              0x00000000d0ddb808 (0xffffff80053abd80)
+                stack start : 0x0000000062289b6c (0xffffffc082498000)
+[   80.308874] current_affairs:show_ctx():
+[   80.308898] current_affairs:show_ctx(): we're running in process context ::
+                name        : rmmod
+                PID         :   1638
+                TGID        :   1638
+                UID         :      0
+                EUID        :      0 (have root)
+                state       : R
+                current (ptr to our process context's task_struct) :
+                              0x00000000a7eaed86 (0xffffff801b283d80)
+                stack start : 0x00000000413df3f4 (0xffffffc082588000)
+[   80.308925] current_affairs:current_affairs_exit(): removed
+~~~
+
+insmod, rmmod를 해보면 name이 insmod, rmmod인 것을 볼 수 있다.  
+코드를 보면, name이 (current->comm)  insmod, rmmod로 출력된다.  
+PID, TGID가 가 같은데, 이건 main스레드라는 의미이다.  
+원래 리눅스는 스레드 아이디만 있었으나 TGID는 POSIX표준을 맞추기 위해서 도입된 개념이라고 한다.  
+이것들은 task_pid_nr, task_tgid_nr, current매크로로 가져오고 있다.
+예제의 실행 결과는 결국 현재 컨텍스트의 이름을 출력하는 것이었고,  
+커널 코드도 user context에서 실행된다는 것을 보여준다.  
+~~~C
+static inline void show_ctx(void)
+{
+	/* Extract the task UID and EUID using helper methods provided */
+	unsigned int uid = from_kuid(&init_user_ns, current_uid());
+	unsigned int euid = from_kuid(&init_user_ns, current_euid());
+
+	pr_info("\n");		/* shows mod & func names (due to the pr_fmt()!) */
+	if (likely(in_task())) {
+		pr_info("we're running in process context ::\n"
+			" name        : %s\n"
+			" PID         : %6d\n"
+			" TGID        : %6d\n"
+			" UID         : %6u\n"
+			" EUID        : %6u (%s root)\n"
+			" state       : %c\n"
+			" current (ptr to our process context's task_struct) :\n"
+			"               0x%pK (0x%px)\n"
+			" stack start : 0x%pK (0x%px)\n",
+			current->comm,
+			/* always better to use the helper methods provided */
+			task_pid_nr(current), task_tgid_nr(current),
+			/* ... rather than using direct lookups:
+			 * current->pid, current->tgid,
+			 */
+			uid, euid,
+			(euid == 0 ? "have" : "don't have"),
+			task_state_to_char(current),
+			/* Printing addresses twice- via %pK and %px
+			 * Here, by default, the values will typically be the same as
+			 * kptr_restrict == 1 and we've got root.
+			 */
+			current, current, current->stack, current->stack);
+		/* FIXME- doesn't work
+		   if (task_state_to_char(current) == 'R')
+		   pr_info("on virtual CPU? %s\n", (current->flags & PF_VCPU)?"yes":"no");
+		 */
+	} else
+		pr_alert("Whoa! running in interrupt context [Should NOT Happen here!]\n");
+}
+~~~
